@@ -1,5 +1,64 @@
-from app.models import User
+from app.models import User, Solutions
 import hashlib
+import os
+
+
+def get_size(start_path = '.'):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            # skip if it is symbolic link
+            if not os.path.islink(fp):
+                total_size += os.path.getsize(fp)
+
+    return total_size
+
+
+def current_files(request, context):
+    if context.get('username') is None:
+        return []
+    if not os.path.exists('./app/user_solutions/' + context['username']):
+        return []
+    output = os.listdir('./app/user_solutions/' + context['username'])
+    try:
+        output.remove(".DS_Store")
+    except:
+        pass
+
+    return output
+
+
+def remove_file(username, file):
+    print('./app/user_solutions/' + username + '/' + file)
+    if not os.path.exists('./app/user_solutions/' + username + '/' + file):
+        return False
+    os.remove('./app/user_solutions/' + username + '/' + file)
+    return True
+
+
+def submit_solutions(request, context):
+    if request.method != 'POST':
+        return False
+    if request.POST['send_files'] is None:
+        return False
+    if not Account.is_logged(request):
+        return False
+
+    if not os.path.exists('./app/user_solutions/' + context['username']):
+        os.mkdir('./app/user_solutions/' + context['username'])
+
+    current_size = get_size('./app/user_solutions/' + context['username'])
+    print(current_size)
+
+    for file in request.FILES.getlist('file'):
+        for chunk in file.chunks():
+            current_size += os.stat('./app/user_solutions/' + context['username']).st_size;
+            if current_size > 25000000:
+                return "BIG"
+            zapis = open('./app/user_solutions/' + context['username'] + '/' + str(file), 'wb+')
+            zapis.write(chunk)
+            zapis.close()
 
 
 class Account:
@@ -94,9 +153,9 @@ class Account:
     def logout(request):
         if request.session.get('logged') is not None:
             del request.session['logged']
-        if request.session.get('username') is None:
+        if request.session.get('username') is not None:
             del request.session['username']
-        if request.session.get('password') is None:
+        if request.session.get('password') is not None:
             del request.session['password']
 
     @staticmethod

@@ -11,7 +11,7 @@ function next_second(){
     current_date = new Date();
     var miliseconds = timer_finish.getTime()-current_date.getTime();
     if(miliseconds<0){
-        widnow.location.reload();
+        window.location.reload();
     }
     var seconds=Math.floor((miliseconds/1000) % 60);
     var minutes = Math.floor(((miliseconds/1000)-seconds)/60 % 60);

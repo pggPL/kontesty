@@ -22,3 +22,10 @@ class Settings(models.Model):
     number_of_problems = models.IntegerField()
     constest_start = models.DateTimeField()
     contest_duration_in_minutes = models.IntegerField()
+
+
+class Solutions(models.Model):
+    username = models.CharField(max_length=30)
+    problem_number = models.IntegerField()
+    file_name = models.CharField(max_length=50, default="sol")
+    file = models.FileField()

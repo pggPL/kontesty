@@ -7,6 +7,18 @@
 
     <link rel="stylesheet" type="text/css" href="static/app/style.css">
     <script src="static/app/clock.js"></script>
+    <script>
+        function remove(filename){
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById(filename).innerHTML="";
+            }
+          };
+          xhttp.open("GET", "remove?file="+filename, true);
+          xhttp.send();
+        }
+    </script>
 </head>
 <body>
 
@@ -51,6 +63,7 @@
 
 <div class="row">
   <div class="column">
+      <center>
     <h3>Zadania</h3>
       {% if contest_in_progress %}
       Do zakończenia konkursu pozostało:
@@ -70,6 +83,24 @@
         </form>
       </div>
 
+      {% elif contest_finished %}
+
+      <div style="width:300px">
+        <form class="form">
+                <a href="problems">
+                <input style="float:left" type="button" value="Pobierz zadania (PDF)">
+                </a>
+        </form>
+          <br><br><br>
+          <h3>Konkurs zakończył się. <br> Dziękujemy za wzięcie udziału.</h3>
+
+          <h2>Twoje rozwiązania</h2>
+          {% for file in files%}
+          <div id="{{ file }}">
+              <a href="user_file?file={{ file }}">{{ file }} </a>
+          <br><br>
+          {%endfor%}
+      </div>
       {% else %}
       Do rozpoczęcia konkursu pozostało:
 
@@ -83,9 +114,35 @@
       {% if contest_in_progress %}
       <br><br>
       <h3> Wysyłanie rozwiązań: </h3>
-        Tu coś będzie
+        Aktualnie dodane pliki:
+          <br><br>
+          {% for file in files%}
+          <div id="{{ file }}">
+              <a href="user_file?file={{ file }}">{{ file }} </a>
+          <input type="button" value="usuń" onclick="remove('{{ file }}')">
+          <br><br>
+          </div>
+          {%endfor%}
+
+        <div style="width:300px">
+          <form name="send_solutions" class="form" enctype="multipart/form-data" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="send_files" value="True">
+              <br><br>
+              <input type="file" name="file" multiple="true" accept="image/*, .pdf" />
+              <br><br>
+              <input type="submit" value="Wyślij rozwiązania">
+              <br><br>
+                {% if big %}
+                Łączny rozmiar twoich plików przekroczył 25 MB!
+              {% endif %}
+              <br><br>
+              Uwaga! Rozmiar twoich plików nie może przekroczyć łącznie 25 MB.
+          </form>
+        </div>
 
       {%endif%}
+      </center>
   </div>
 </div>
 

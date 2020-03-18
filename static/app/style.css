@@ -40,7 +40,7 @@ body {
 .column {
   float: left;
   width: 100%;
-  padding: 15px;
+  padding: 30px;
 }
 
 .tit{
@@ -185,7 +185,7 @@ select{
 .form2 .field-textarea{
 	height: 100px;
 }
-.form2 input[type=button], .form-style-1 input[type=button]{
+.form2 input[type=button]{
 	background: #4B99AD;
 	padding: 8px 15px 8px 15px;
 	border: none;

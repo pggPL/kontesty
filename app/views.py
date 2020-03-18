@@ -13,6 +13,13 @@ def index(request):
 
 def user_panel(request):
     context = set_context(request)
+    if not context['contest_in_progress'] and request.POST.get('send_files') == 'True':
+        return HttpResponse("Konkurs zakończony, niestety nie możesz już wysłać zadań.")
+    if request.POST.get('send_files') == 'True':
+        ans = submit_solutions(request, context)
+        if ans == "BIG":
+            context['big'] = True
+    context['files'] = current_files(request, context)
     return render(request, 'app/userpanel.html', context)
 
 
@@ -77,4 +84,33 @@ def problems(request):
     if context['contest_in_progress']:
         return FileResponse(open('app/problems/problems.pdf', 'rb'), content_type='application/pdf')
     else:
-        redirect('index')
+        return redirect('index')
+
+
+def user_file(request):
+    context = set_context(request)
+    if not Account.is_logged(request):
+        raise Http404()
+    if request.GET['file'] is None:
+        raise Http404()
+    print('./app/user_solutions/'+context['username']+'/'+request.GET['file'])
+    if not os.path.exists('./app/user_solutions/'+context['username']+'/'+request.GET['file']):
+        raise Http404()
+    return FileResponse(open('./app/user_solutions/'+context['username']+'/'+request.GET['file'], 'rb'))
+
+
+def remove(request):
+    context = set_context(request)
+    if not context['contest_in_progress']:
+        raise Http404()
+    if not Account.is_logged(request):
+        raise Http404()
+    if request.method != 'GET':
+        raise Http404()
+    if request.GET.get('file') is None:
+        raise Http404()
+    if not remove_file(context['username'], request.GET['file']):
+        raise Http404()
+    return HttpResponse('');
+
+    pass
