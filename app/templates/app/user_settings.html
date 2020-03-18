@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<title>{{ contest_name }}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="static/app/style.css">
+
+    <script>
+        function sub(){
+            if(document.getElementById("username").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("email").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("real_name").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("real_surname").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("city").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("school").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("username").value.length < 3){
+                document.getElementById("warn").innerHTML="Nazwa użytkownika musi mieć co najmniej 3 znaki.";
+                return false;
+            }
+            document.getElementById("form_reg").submit();
+            return true;
+        }
+    </script>
+
+</head>
+<body>
+
+<div class="header">
+
+    <div class="tit">
+        <h1>{{ contest_name }}</h1>
+        <p>{{ contest_description }}</p>
+    </div>
+    <div class="form_log">
+        {% if not logged %}
+        <form name="login" method="POST" class="form" action="login">
+            {% csrf_token %}
+            <br>
+            <label for=username"> Nazwa użytkownika: </label>
+            <input type="text" name="username">
+            <br>
+            <label for="password">Hasło:</label>
+            <input type="password" name="password">
+            <br>
+            <input type="submit" value="Zaloguj">
+
+        </form>
+        {% endif %}
+    </div>
+
+
+</div>
+
+
+<div class="topnav">
+  <a href="index">Aktualności</a>
+  <a href="rules">Zasady</a>
+    {% if not logged %}
+        <a href="register"> Zapisz się</a>
+    {% else %}
+        <a href="user"> Panel użytkownika</a>
+        <a href="user_settings"> Ustawienia konta</a>
+        <a href="logout"> Wyloguj</a>
+    {%endif%}
+</div>
+
+<div class="row">
+  <div class="column">
+    <form name="edit" method="POST" class="form2" if="form_register" id="form_reg">
+        {% csrf_token %}
+        <h2>Edytuj dane</h2>
+
+        {% if changed %}
+            <br>
+            Dane zmieniono pomyślnie!
+            <br>
+        {% endif %}
+
+        <label >Nazwa użytkownika</label>
+        <input type="text" name="username1" id="username" value="{{ username }}" disabled>
+        <input type="hidden" name="username" id="username" value="{{ username }}" >
+        {% if username_used %}
+        <br>
+        Ta nazwa użytkownika jest już zajęta!
+        {% endif %}
+        <label>Adres e-mail</label>
+        <input type="text" name="email" id="email" value="{{ email }}">
+        <label>Imię</label>
+        <input type="text" name="real_name" id="real_name"  value="{{ real_name }}">
+        <label>Nazwisko</label>
+        <input type="text" name="real_surname" id="real_surname"  value="{{ real_surname }}">
+        <label>Miejsce zamieszkania</label>
+        <input type="text" name="city" id="city"  value="{{ city }}">
+        <label>Nazwa szkoły</label>
+        <input type="text" name="school" id="school"  value="{{ school }}">
+        <label>Klasa</label>
+        <select name="user_class" id="user_class">
+          <option value="6" {% if user_class == 6 %} selected {% endif %}>młodsza</option>
+          <option value="7" {% if user_class == 7 %} selected {% endif %}>7</option>
+          <option value="8" {% if user_class == 8 %} selected {% endif %}>8</option>
+          <option value="1" {% if user_class == 1 %} selected {% endif %} >1 po szkole podstawowej</option>
+          <option value="2" {% if user_class == 2 %} selected {% endif %}>1 po gimnazjum</option>
+          <option value="3" {% if user_class == 3 %} selected {% endif %}>2</option>
+          <option value="4" {% if user_class == 4 %} selected {% endif %}>3</option>
+        </select>
+        </select>
+        <br>
+        <br>
+        W razie podania nieprawdziwych danych organizator zastrzega sobie prawo do usunięcia konta.
+        <br>
+        <br>
+        <input type="button" value="Zapisz dane" onclick="sub()">
+        <a href="change_password">
+            <input type="button" value="Zmień hasło">
+        </a>
+        <br><br>
+        <div id="warn" style="color:red"></div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>

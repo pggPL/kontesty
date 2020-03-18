@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<title>{{ contest_name }}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="static/app/style.css">
+
+    <script>
+        function sub(){
+            if(document.getElementById("consent1").checked == false || document.getElementById("consent2").checked == false){
+                document.getElementById("warn").innerHTML="Aby się zapisać potrzebujesz zaakceptować wszystkie poniższe zgody";
+                return false;
+            }
+            if(document.getElementById("username").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("email").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("real_name").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("real_surname").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("city").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("school").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("password1").value == ""){
+                document.getElementById("warn").innerHTML="Wypełnij wszystkie pola";
+                return false;
+            }
+            if(document.getElementById("password1").value != document.getElementById("password2").value){
+                document.getElementById("warn").innerHTML="Hasła nie pasują do siebie";
+                return false;
+            }
+            if(document.getElementById("username").value.length < 3){
+                document.getElementById("warn").innerHTML="Nazwa użytkownika musi mieć co najmniej 3 znaki.";
+                return false;
+            }
+            document.getElementById("form_reg").submit();
+            return true;
+        }
+    </script>
+
+</head>
+<body>
+
+<div class="header">
+
+    <div class="tit">
+        <h1>{{ contest_name }}</h1>
+        <p>{{ contest_description }}</p>
+    </div>
+    <div class="form_log">
+        {% if not logged %}
+        <form name="login" method="POST" class="form" action="login">
+            {% csrf_token %}
+            <br>
+            <label for=username"> Nazwa użytkownika: </label>
+            <input type="text" name="username">
+            <br>
+            <label for="password">Hasło:</label>
+            <input type="password" name="password">
+            <br>
+            <input type="submit" value="Zaloguj">
+
+        </form>
+        {% endif %}
+    </div>
+
+
+</div>
+
+
+<div class="topnav">
+  <a href="index">Aktualności</a>
+  <a href="rules">Zasady</a>
+    {% if not logged %}
+        <a href="register"> Zapisz się</a>
+    {% else %}
+        <a href="user"> Panel użytkownika</a>
+        <a href="user_settings"> Ustawienia konta</a>
+        <a href="logout"> Wyloguj</a>
+    {%endif%}
+</div>
+
+<div class="row">
+  <div class="column">
+    <form name="register" method="POST" class="form2" if="form_register" id="form_reg">
+        {% csrf_token %}
+        <h2>Załóż konto</h2>
+        <label >Nazwa użytkownika</label>
+        <input type="text" name="username" id="username">
+        {% if username_used %}
+        <br>
+        Ta nazwa użytkownika jest już zajęta!
+        {% endif %}
+        <label>Adres e-mail</label>
+        <input type="text" name="email" id="email">
+        <label>Imię</label>
+        <input type="text" name="real_name" id="real_name">
+        <label>Nazwisko</label>
+        <input type="text" name="real_surname" id="real_surname">
+        <label>Miejsce zamieszkania</label>
+        <input type="text" name="city" id="city">
+        <label>Nazwa szkoły</label>
+        <input type="text" name="school" id="school">
+        <label>Klasa</label>
+        <select name="user_class" id="user_class">
+          <option value="6">młodsza</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="1">1 po szkole podstawowej</option>
+          <option value="2">1 po gimnazjum</option>
+          <option value="3">2</option>
+          <option value="4">3</option>
+        </select>
+        <label>Hasło</label>
+        <input type="password" name="password" id="password1">
+        <label>Powtórz hasło</label>
+        <input type="password" name="password" id="password2">
+        <label> <input type="checkbox" name="consent1" id="consent1"> Akceptuję <a href="rules">zasady</a></label>
+        <label> <input type="checkbox" name="consent2" id="consent2"> Wyrażam zgodę na przetwarzanie danych osobowych w celu
+            przeprowadzenia konkursu.</label>
+        <br>
+        <br>
+        W razie podania nieprawdziwych danych organizator zastrzega sobie prawo do usunięcia konta.
+        <br>
+        <br>
+        <input type="button" value="Załóż konto" onclick="sub()">
+        <br><br>
+        <div id="warn" style="color:red"></div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
