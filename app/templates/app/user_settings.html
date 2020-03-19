@@ -74,6 +74,9 @@
 <div class="topnav">
   <a href="index">Aktualności</a>
   <a href="rules">Zasady</a>
+    {% if admin %}
+        <a href="check_panel"> Ocenianie zadań</a>
+    {% endif %}
     {% if not logged %}
         <a href="register"> Zapisz się</a>
     {% else %}

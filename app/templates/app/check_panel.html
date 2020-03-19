@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<title>{{ contest_name }}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+   <link rel="stylesheet" type="text/css" href="static/app/style.css">
+
+<script>
+    var obj;
+    var current_i=-1;
+    var current_j=0;
+    var names = [{% for name in names %} '{{name}}', {% endfor %}];
+    var marks = [{% for mark in marks %} '{{mark}}', {% endfor %}];
+    var problems={{ number_of_problems_value }};
+    var xhttp = new XMLHttpRequest();
+    var modal;
+    var span;
+
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+          obj = JSON.parse(this.responseText)
+          names = obj['names']
+          marks = obj['marks']
+          gen_table();
+       }
+    };
+    function refresh(){
+        xhttp.open("GET", "update_check", true);
+        xhttp.send();
+    }
+    function gen_table(){
+        output="<table><tr><th> Login </th>";
+        for(var j = 0; j < problems; j++){
+            output+="<th> Zadanie " + (j+1) +"  ";
+        }
+        output += "<th> Rozwiązania </th>"
+        output += "</tr>";
+        for(var i = 0; i < names.length; i++){
+            output+="<tr>"
+            output+="<th>" + names[i] + "</th>";
+            for(var j = 0; j < problems; j++){
+                output += "<th>";
+                output += '<input class="mark"  type="button" id="'+i+','+j+'"value="'+marks[i*problems+j]+'" onclick="change_panel('+i+','+j+')">';
+                output += "</th>";
+            }
+            output+='<td> <input style="border:none; width: 100px; height: 30px; background-color: #aaa" type="button" value="zobacz" onclick="see('+i+')"> </td>';
+            output+="</tr>"
+        }
+        output = output + "</table>"
+        document.getElementById("table").innerHTML=output;
+        if(current_i==-1){
+            return;
+        }
+        document.getElementById(current_i+','+current_j).style = "background-color: blue";
+    }
+
+    function change_panel(i, j){
+    modal.style.display = "block";
+        if(current_i>-1){
+            document.getElementById(current_i+','+current_j).style = " ";
+        }
+        current_i=i;
+        current_j=j;
+        document.getElementById(current_i+','+current_j).style = "background-color: blue";
+        document.getElementById("change").innerHTML=`
+        <h4> Zmień ocenę `+names[i]+` za zadanie `+(j+1)+`</h4>
+        <br>
+        <input type="button" class="mark" id="change_6" value="6" onclick="change_mark('6')">
+        <input type="button" class="mark" id="change_5" value="5" onclick="change_mark('5')">
+        <input type="button" class="mark" id="change_2" value="2" onclick="change_mark('2')">
+        <input type="button" class="mark" id="change_0" value="0" onclick="change_mark('0')">
+        <input type="button" class="mark" id="change_-" value="-" onclick="change_mark('-')">
+        <input type="button" class="mark" id="change_?" value="?" onclick="change_mark('?')">
+        `;
+        document.getElementById('change_'+marks[i*problems+j]).style="background-color: red";
+    }
+
+    function change_mark(mark){
+        document.getElementById('change_'+marks[current_i*problems+current_j]+'').style="";
+        marks[current_i*problems+current_j]=mark;
+        console.log(marks[current_i*problems+current_j]);
+        document.getElementById('change_'+mark).style="background-color: red";
+        var xhttp2 = new XMLHttpRequest();
+        xhttp2.onreadystatechange = function() {
+        };
+        xhttp2.open("GET", "change_check?name="+names[current_i]+"&problem="+(current_j+1)+"&mark="+mark, true);
+        xhttp2.send();
+        setTimeout(refresh, 200);
+    }
+
+    function see(i){
+        window.open("solutions_check?username="+names[i]);
+    }
+
+    function load(){
+        gen_table();
+        modal = document.getElementById("myModal");
+        span = document.getElementsByClassName("close")[0];
+        span.onclick = function() {
+          modal.style.display = "none";
+          document.getElementById(current_i+','+current_j).style = " ";
+        }
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+            document.getElementById(current_i+','+current_j).style = " ";
+          }
+        }
+    }
+
+
+</script>
+
+</head>
+<body onload="load()">
+
+<div class="header">
+
+    <div class="tit">
+        <h1>{{ contest_name }}</h1>
+        <p>{{ contest_description }}</p>
+    </div>
+    <div class="form_log">
+        {% if not logged %}
+        <form name="login" method="POST" class="form" action="login">
+            {% csrf_token %}
+            <br>
+            <label for=username"> Nazwa użytkownika: </label>
+            <input type="text" name="username">
+            <br>
+            <label for="password">Hasło:</label>
+            <input type="password" name="password">
+            <br>
+            <input type="submit" value="Zaloguj">
+            {% if wrong_password %}
+            <br><br>
+            <div style="color:red"> Złe hasło lub nazwa użytkownika! </div>
+            {% endif %}
+        </form>
+        {% endif %}
+    </div>
+
+
+</div>
+
+
+<div class="topnav">
+  <a href="index">Aktualności</a>
+  <a href="rules">Zasady</a>
+    {% if admin %}
+        <a href="check_panel"> Ocenianie zadań</a>
+    {% endif %}
+    {% if not logged %}
+        <a href="register"> Zapisz się</a>
+    {% else %}
+        <a href="user"> Panel użytkownika</a>
+        <a href="user_settings"> Ustawienia konta</a>
+        <a href="logout"> Wyloguj</a>
+    {%endif%}
+</div>
+
+<div class="row">
+  <div class="column">
+        <br><br>
+        <div id="table" style="width: 600px; float: left; margin: 0 60px 0 0">
+
+        </div>
+        <div style="width: 200 px, display: block">
+
+        </div>
+      <div id="solutions">
+
+      </div>
+  </div>
+</div>
+
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p id="change">
+
+    </p>
+  </div>
+
+
+</div>
+
+<script>
+    setInterval(refresh, 15000);
+
+</script>
+</body>
+</html>

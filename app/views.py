@@ -1,7 +1,9 @@
 from django.shortcuts import render, HttpResponse, redirect
 from app.login import *
 from app.main import *
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
+from app.marking import *
+import os
 
 
 # Create your views here.
@@ -26,9 +28,10 @@ def user_panel(request):
 def register(request):
     context = set_context(request)
     # Teraz obsługujemy żądzanie rejestracji
-    reg_state = Account.try_register(request)
+    reg_state = Account.try_register(request, context['number_of_problems_value'])
     if reg_state == "OK":
-        return redirect('user_panel')
+
+        return redirect('index')
     if reg_state == "Username used":
         context['username_used'] = True
         return render(request, 'app/register.html', context)
@@ -113,4 +116,60 @@ def remove(request):
         raise Http404()
     return HttpResponse('');
 
-    pass
+
+def check_panel(request):
+    context = set_context(request)
+    if not context['admin']:
+        return redirect('index')
+    load_marks(context)
+    return render(request, 'app/check_panel.html', context)
+
+
+def update_check(request):
+    context = set_context(request)
+    if not context['admin']:
+        return redirect('index')
+    load_marks(context)
+    output = {'names': context['names'], 'marks': context['marks']}
+    return JsonResponse(output)
+
+
+def change_check(request):
+    context = set_context(request)
+    if not context['admin']:
+        raise Http404()
+    if request.GET.get('name') is None or request.GET.get('problem') is None or request.GET.get('mark') is None:
+        raise Http404()
+    change_mark(request.GET['name'], request.GET['problem'], request.GET['mark'])
+    return HttpResponse("")
+
+
+def display_image_check(request):
+    context = set_context(request)
+    if not context['admin']:
+        raise Http404()
+    if request.method != "GET":
+        raise Http404()
+    if request.GET.get('adress') is None:
+        raise Http404()
+    img_type = request.GET.get('adress').split('.')[-1]
+    return HttpResponse(open("app/user_solutions/"+request.GET['adress'],"rb+").read(), content_type="image/"+img_type)
+
+
+def solutions_check(request):
+    context = set_context(request)
+    if not context['admin']:
+        raise Http404()
+    if request.method != "GET":
+        raise Http404()
+    if request.GET['username'] is None:
+        raise Http404()
+    context['check_username'] = request.GET['username']
+    user_solutions = os.listdir('app/user_solutions/'+request.GET['username'])
+    if '.DS_Store' in user_solutions:
+        user_solutions.remove('.DS_Store')
+    user_solutions = [request.GET['username'] + '/' + adr for adr in user_solutions]
+    print(user_solutions)
+    context['solution_adresses'] = user_solutions
+    return render(request, 'app/solutions_check.html', context)
+

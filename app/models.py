@@ -13,6 +13,8 @@ class User(models.Model):
     school = models.CharField(max_length=30)
     password = models.CharField(max_length=80)
     user_class = models.IntegerField()
+    admin = models.BooleanField(default=False)
+    marks = models.CharField(max_length=30, default="")
 
 
 class Settings(models.Model):
@@ -22,6 +24,7 @@ class Settings(models.Model):
     number_of_problems = models.IntegerField()
     constest_start = models.DateTimeField()
     contest_duration_in_minutes = models.IntegerField()
+    mark_view = models.BooleanField(default=False)
 
 
 class Solutions(models.Model):

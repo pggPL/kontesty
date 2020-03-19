@@ -13,5 +13,10 @@ urlpatterns = [
     path('change_password', views.change_password, name='change_password'),
     path('problems', views.problems, name='problems'),
     path('user_file', views.user_file, name='user_file'),
+    path('check_panel', views.check_panel, name='check_panel'),
+    path('update_check', views.update_check, name='update_check'),
+    path('change_check', views.change_check, name='change_check'),
+    path('solutions_check', views.solutions_check, name='solutions_check'),
+    path('display_image_check', views.display_image_check, name='display_image_check'),
     path('remove', views.remove, name='remove')
 ]

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Podgląd rozwiązań</title>
+</head>
+<body>
+    <h2> Rozwiązania {{ check_username }}</h2>
+    <br>
+    {% for adr in solution_adresses %}
+        <img src="display_image_check?adress={{ adr }}"><br><br>
+    {% endfor %}
+</body>
+</html>

@@ -3,7 +3,8 @@ import hashlib
 import os
 
 
-def get_size(start_path = '.'):
+def get_size(start_path='.'):
+    """ Returns total size of files in given directory"""
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
@@ -16,6 +17,7 @@ def get_size(start_path = '.'):
 
 
 def current_files(request, context):
+    """ Returns list of users(from context) files"""
     if context.get('username') is None:
         return []
     if not os.path.exists('./app/user_solutions/' + context['username']):
@@ -30,6 +32,7 @@ def current_files(request, context):
 
 
 def remove_file(username, file):
+    """ Removes given file of given user"""
     print('./app/user_solutions/' + username + '/' + file)
     if not os.path.exists('./app/user_solutions/' + username + '/' + file):
         return False
@@ -38,6 +41,7 @@ def remove_file(username, file):
 
 
 def submit_solutions(request, context):
+    """ Is serving solutions submitting to the server"""
     if request.method != 'POST':
         return False
     if request.POST['send_files'] is None:
@@ -61,31 +65,30 @@ def submit_solutions(request, context):
             zapis.close()
 
 
+def check_if_variables_are_set(request, list_of_names):
+    """ This function takes list of strings and request
+    and checks if all of elements are declared were send by thr POST method"""
+    for el in list_of_names:
+        if request.POST.get('username') is None:
+            return False
+    return True
+
+
 class Account:
+    """ This class contains all methods connected to accounts/logging in/registering etc"""
     @staticmethod
-    def try_register(request):
+    def try_register(request, number_of_problems):
+        """ This function is registering an user from request. It returns "Wrong data" if data given by user are
+         not complete and returns "OK" if all was ok and user is registered """
         if request.method != "POST":
             return "Wrong data"
-        if request.POST.get('username') is None:
+        required_data = ['email', 'real_name', 'real_surname', 'school', 'city', 'user_class', 'password', 'username']
+        if check_if_variables_are_set(request, required_data):
             return "Wrong data"
         if len(request.POST.get('username')) < 3:
             return "Wrong data"
-        if request.POST.get('email') is None:
-            return "Wrong data"
-        if request.POST.get('real_name') is None:
-            return "Wrong data"
-        if request.POST.get('real_surname') is None:
-            return "Wrong data"
-        if request.POST.get('email') is None:
-            return "Wrong data"
-        if request.POST.get('school') is None:
-            return "Wrong data"
-        if request.POST.get('city') is None:
-            return "Wrong data"
-        if request.POST.get('user_class') is None:
-            return "Wrong data"
-        if request.POST.get('password') is None:
-            return "Wrong data"
+
+
         # We check if username is free
         if User.objects.filter(username=request.POST.get('username')).exists():
             return "Username used"
@@ -99,12 +102,24 @@ class Account:
         new_user.user_class = request.POST['user_class']
         hash_object = hashlib.sha1(request.POST['password'].encode())
         new_user.password = hash_object.digest()
+
+        new_user.marks="$".join(['?']*number_of_problems)
+        request.session['logged'] = True
+        request.session['username'] = request.POST['username']
+        request.session['password'] = request.POST['password']
+
+        # Create directory for solutions
+        if not os.path.exists('./app/user_solutions/' + request.POST['username']):
+            os.mkdir('./app/user_solutions/' + request.POST['username'])
+
         new_user.save()
+
         print("Zarejestrowano pomyślnie")
         return "OK"
 
     @staticmethod
     def try_login(request):
+        """ This function is serving logging in. It returns state of this logging in."""
         # Check if is logged by session
         if request.session.get('logged') is not None:
             return "Already logged"
@@ -136,6 +151,7 @@ class Account:
 
     @staticmethod
     def is_logged(request):
+        """ Returns true if user is logged, false if not"""
         if request.session.get('logged') is None:
             return False
         if request.session.get('username') is None:
@@ -145,12 +161,15 @@ class Account:
 
         querry = User.objects.filter(username=request.session.get('username'))
         password = hashlib.sha1(request.session.get('password').encode()).digest()
+        if len(querry) != 1:
+            return False
         if str(querry[0].password) != str(password):
             return False
         return True
 
     @staticmethod
     def logout(request):
+        """ Log user out """
         if request.session.get('logged') is not None:
             del request.session['logged']
         if request.session.get('username') is not None:
@@ -160,6 +179,7 @@ class Account:
 
     @staticmethod
     def update_context(request, context):
+        """ Updates the dictionary "context" by new data connected to accounts """
         if request.session.get('logged') is None:
             return context
         if request.session.get('username') is None:
@@ -179,35 +199,25 @@ class Account:
         context['city'] = querry[0].city
         context['school'] = querry[0].school
         context['user_class'] = querry[0].user_class
+        context['admin'] = querry[0].admin
+        context['usermarks'] =  zip(range(1, len(querry[0].marks) + 1), querry[0].marks.split('$'))
 
         return context
 
     @staticmethod
     def try_change_data(request):
+        """ Serves changing data"""
         if not Account.is_logged(request):
             return "User is not logged"
         if request.method != "POST":
             return "Wrong data"
-        if request.POST.get('username') is None:
+        required_data = ['email', 'real_name', 'real_surname', 'school', 'city', 'user_class', 'password', 'username']
+        if check_if_variables_are_set(request, required_data):
             return "Wrong data"
         if len(request.POST.get('username')) < 3:
             return "Wrong data"
         if request.POST['username'] != request.session['username']:
             return "Wrong name"
-        if request.POST.get('email') is None:
-            return "Wrong data"
-        if request.POST.get('real_name') is None:
-            return "Wrong data"
-        if request.POST.get('real_surname') is None:
-            return "Wrong data"
-        if request.POST.get('email') is None:
-            return "Wrong data"
-        if request.POST.get('school') is None:
-            return "Wrong data"
-        if request.POST.get('city') is None:
-            return "Wrong data"
-        if request.POST.get('user_class') is None:
-            return "Wrong data"
         # We check if username is free
         try:
             user_to_change = User.objects.get(username=request.POST.get('username'))
@@ -228,6 +238,7 @@ class Account:
 
     @staticmethod
     def try_change_password(request):
+        """ Serves changing password"""
         if not Account.is_logged(request):
             return "User is not logged"
         if request.method != "POST":

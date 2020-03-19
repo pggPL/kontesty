@@ -52,6 +52,9 @@
 <div class="topnav">
   <a href="index">Aktualności</a>
   <a href="rules">Zasady</a>
+    {% if admin %}
+        <a href="check_panel"> Ocenianie zadań</a>
+    {% endif %}
     {% if not logged %}
         <a href="register"> Zapisz się</a>
     {% else %}
@@ -59,6 +62,7 @@
         <a href="user_settings"> Ustawienia konta</a>
         <a href="logout"> Wyloguj</a>
     {%endif%}
+
 </div>
 
 <div class="row">
@@ -99,7 +103,21 @@
           <div id="{{ file }}">
               <a href="user_file?file={{ file }}">{{ file }} </a>
           <br><br>
+
           {%endfor%}
+
+          {% if mark_view and contest_finished and logged %}
+            <h2>Twoje oceny</h2>
+              <table>
+              {% for problem, mark in usermarks %}
+                  <tr>
+                      <th>Zadanie {{ problem }}</th>
+
+                      <th> {{mark}} </th>
+                </tr>
+              {% endfor %}
+                  </table>
+          {% endif %}
       </div>
       {% else %}
       Do rozpoczęcia konkursu pozostało:

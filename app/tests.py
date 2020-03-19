@@ -44,4 +44,11 @@ class UserTest(TestCase):
         response = c.get('/problems')
         response = c.get('/user_file')
         response = c.get('/remove')
+        response = c.get('/remove')
+        response = c.get('check_panel')
+        response = c.get('update_check')
+        response = c.get('change_check')
+        response = c.get('solutions_check')
+        response = c.get('display_image_check')
+        response = c.get('remove')
 
