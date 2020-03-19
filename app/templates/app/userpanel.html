@@ -54,10 +54,11 @@
   <a href="rules">Zasady</a>
     {% if admin %}
         <a href="check_panel"> Ocenianie zadań</a>
+        <a href="ranks"> Rankingi </a>
     {% endif %}
-    {% if not logged %}
+    {% if not logged and open_enrollment %}
         <a href="register"> Zapisz się</a>
-    {% else %}
+    {% elif logged %}
         <a href="user"> Panel użytkownika</a>
         <a href="user_settings"> Ustawienia konta</a>
         <a href="logout"> Wyloguj</a>
@@ -117,6 +118,8 @@
                 </tr>
               {% endfor %}
                   </table>
+              <br>
+              <h4> {{ marks_adnotation }} </h4>
           {% endif %}
       </div>
       {% else %}
@@ -147,7 +150,7 @@
               {% csrf_token %}
               <input type="hidden" name="send_files" value="True">
               <br><br>
-              <input type="file" name="file" multiple="true" accept="image/*, .pdf" />
+              <input type="file" name="file" multiple="true" accept="image/*" />
               <br><br>
               <input type="submit" value="Wyślij rozwiązania">
               <br><br>

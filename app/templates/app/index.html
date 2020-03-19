@@ -45,10 +45,11 @@
   <a href="rules">Zasady</a>
     {% if admin %}
         <a href="check_panel"> Ocenianie zadań</a>
+        <a href="ranks"> Rankingi </a>
     {% endif %}
-    {% if not logged %}
+    {% if not logged  and open_enrollment %}
         <a href="register"> Zapisz się</a>
-    {% else %}
+    {% elif logged %}
         <a href="user"> Panel użytkownika</a>
         <a href="user_settings"> Ustawienia konta</a>
         <a href="logout"> Wyloguj</a>

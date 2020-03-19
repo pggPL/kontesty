@@ -1,4 +1,4 @@
-from app.models import User, Solutions
+from app.models import User
 import hashlib
 import os
 

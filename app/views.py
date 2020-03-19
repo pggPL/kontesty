@@ -27,6 +27,8 @@ def user_panel(request):
 
 def register(request):
     context = set_context(request)
+    if not context['open_enrollment']:
+        return HttpResponse("Nie można już się zapisać!");
     # Teraz obsługujemy żądzanie rejestracji
     reg_state = Account.try_register(request, context['number_of_problems_value'])
     if reg_state == "OK":
@@ -55,6 +57,7 @@ def user_settings(request):
 def login(request):
     context = set_context(request)
     reg_state = Account.try_login(request)
+    print(reg_state)
     if reg_state == "OK":
         return redirect('user_panel')
     if reg_state == "Username used":
@@ -64,7 +67,7 @@ def login(request):
     if reg_state == "Wrong password":
         context['wrong_password'] = True
         return render(request, 'app/index.html', context)
-    return render(request, 'app/userpanel.html', context)
+    return render(request, 'app/index.html', context)
 
 
 def logout(request):
@@ -173,3 +176,10 @@ def solutions_check(request):
     context['solution_adresses'] = user_solutions
     return render(request, 'app/solutions_check.html', context)
 
+
+def ranks(request):
+    context = set_context(request)
+    if not context['admin']:
+        return redirect('index')
+    load_marks(context)
+    return render(request, 'app/ranks.html', context)

@@ -25,10 +25,5 @@ class Settings(models.Model):
     constest_start = models.DateTimeField()
     contest_duration_in_minutes = models.IntegerField()
     mark_view = models.BooleanField(default=False)
-
-
-class Solutions(models.Model):
-    username = models.CharField(max_length=30)
-    problem_number = models.IntegerField()
-    file_name = models.CharField(max_length=50, default="sol")
-    file = models.FileField()
+    open_enrollment = models.BooleanField(default=False)
+    marks_adnotation = models.CharField(max_length=300, default='')

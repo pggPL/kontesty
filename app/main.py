@@ -16,6 +16,8 @@ def set_context(request):
     output['rules'] = Settings.objects.filter().get().rules.split(';')
     output['number_of_problems_value'] = Settings.objects.filter().get().number_of_problems
     output['number_of_problems'] = range(1, Settings.objects.filter().get().number_of_problems + 1)
+    output['open_enrollment'] = Settings.objects.filter().get().open_enrollment
+    output['marks_adnotation'] = Settings.objects.filter().get().marks_adnotation
     con_start = Settings.objects.filter().get().constest_start
     duration = Settings.objects.filter().get().contest_duration_in_minutes
     output['mark_view'] = Settings.objects.filter().get().mark_view

@@ -51,7 +51,7 @@
         <p>{{ contest_description }}</p>
     </div>
     <div class="form_log">
-        {% if not logged %}
+        {% if not logged  %}
         <form name="login" method="POST" class="form" action="login">
             {% csrf_token %}
             <br>
@@ -76,6 +76,7 @@
   <a href="rules">Zasady</a>
     {% if admin %}
         <a href="check_panel"> Ocenianie zadań</a>
+        <a href="ranks"> Rankingi </a>
     {% endif %}
     {% if not logged %}
         <a href="register"> Zapisz się</a>
