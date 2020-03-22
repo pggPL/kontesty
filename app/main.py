@@ -26,8 +26,8 @@ def set_context(request):
     output['contest_finished'] = False
     con_start=con_start.replace(tzinfo=None)
     today=today.replace(tzinfo=None)
-    output['contest_start_date']=(con_start-datetime(1970,1,1,1)).total_seconds()*1000;
-    output['contest_end_date']=(con_start+timedelta(minutes=duration)-datetime(1970,1,1)).total_seconds()*1000;
+    output['contest_start_date']=(con_start-datetime(1970,1,1,1)).total_seconds()*1000
+    output['contest_end_date']=(con_start+timedelta(minutes=duration)-datetime(1970, 1, 1)).total_seconds()*1000
     if con_start < today < con_start + timedelta(minutes=duration):
         output['contest_in_progress'] = True
     elif today > con_start + timedelta(minutes=duration):

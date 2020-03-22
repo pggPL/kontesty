@@ -69,7 +69,7 @@ def check_if_variables_are_set(request, list_of_names):
     """ This function takes list of strings and request
     and checks if all of elements are declared were send by thr POST method"""
     for el in list_of_names:
-        if request.POST.get('username') is None:
+        if request.POST.get(el) is None:
             return False
     return True
 
@@ -82,8 +82,18 @@ class Account:
          not complete and returns "OK" if all was ok and user is registered """
         if request.method != "POST":
             return "Wrong data"
-        required_data = ['email', 'real_name', 'real_surname', 'school', 'city', 'user_class', 'password', 'username']
-        if check_if_variables_are_set(request, required_data):
+        required_data = [
+            'email',
+            'real_name',
+            'real_surname',
+            'school',
+            'city',
+            'user_class',
+            'password',
+            'username',
+            'marks'
+        ]
+        if not check_if_variables_are_set(request, required_data):
             return "Wrong data"
         if len(request.POST.get('username')) < 3:
             return "Wrong data"
@@ -114,7 +124,6 @@ class Account:
 
         new_user.save()
 
-        print("Zarejestrowano pomyślnie")
         return "OK"
 
     @staticmethod
@@ -136,8 +145,6 @@ class Account:
 
         if not querry.exists():
             return "Wrong password"
-        print(querry[0].password)
-        print(password)
         if str(querry[0].password) != str(password):
             return "Wrong password";
 
@@ -230,10 +237,8 @@ class Account:
             user_to_change.user_class = request.POST['user_class']
             user_to_change.save()
         except:
-            print("User is not registered")
             return False
 
-        print("Zarejestrowano pomyślnie")
         return True
 
     @staticmethod
@@ -249,7 +254,6 @@ class Account:
             return "Wrong data"
         if str(request.POST.get('old_password')) != str(request.session['password']):
             return "Fatal error"
-        print("xx")
         # We check if username is free
         try:
             user_to_change = User.objects.get(username=request.POST.get('username'))
@@ -257,8 +261,6 @@ class Account:
 
             user_to_change.save()
         except:
-            print("User is not registered")
             return False
 
-        print("Zarejestrowano pomyślnie")
         return True

@@ -29,10 +29,9 @@ def register(request):
     context = set_context(request)
     if not context['open_enrollment']:
         return HttpResponse("Nie można już się zapisać!");
-    # Teraz obsługujemy żądzanie rejestracji
+    # We serve registration
     reg_state = Account.try_register(request, context['number_of_problems_value'])
     if reg_state == "OK":
-
         return redirect('index')
     if reg_state == "Username used":
         context['username_used'] = True
@@ -46,7 +45,6 @@ def rules(request):
 
 
 def user_settings(request):
-    print(Account.try_change_data(request))
     context = set_context(request)
     if Account.try_change_data(request) is True:
         context['changed'] = True
@@ -57,7 +55,6 @@ def user_settings(request):
 def login(request):
     context = set_context(request)
     reg_state = Account.try_login(request)
-    print(reg_state)
     if reg_state == "OK":
         return redirect('user_panel')
     if reg_state == "Username used":
@@ -99,7 +96,6 @@ def user_file(request):
         raise Http404()
     if request.GET['file'] is None:
         raise Http404()
-    print('./app/user_solutions/'+context['username']+'/'+request.GET['file'])
     if not os.path.exists('./app/user_solutions/'+context['username']+'/'+request.GET['file']):
         raise Http404()
     return FileResponse(open('./app/user_solutions/'+context['username']+'/'+request.GET['file'], 'rb'))
@@ -172,7 +168,6 @@ def solutions_check(request):
     if '.DS_Store' in user_solutions:
         user_solutions.remove('.DS_Store')
     user_solutions = [request.GET['username'] + '/' + adr for adr in user_solutions]
-    print(user_solutions)
     context['solution_adresses'] = user_solutions
     return render(request, 'app/solutions_check.html', context)
 

@@ -56,11 +56,12 @@
 <div class="row">
   <div class="column">
     <h2>Zasady</h2>
-      {% for rule in rules%}
-      {{ rule }}
-      <br>
-      {% endfor %}
-
+      <ol>
+          {% for rule in rules%}
+          <li>{{ rule }}</li>
+          <br>
+          {% endfor %}
+      </ol>
       <br>
 
   </div>
