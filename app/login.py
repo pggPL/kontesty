@@ -90,8 +90,7 @@ class Account:
             'city',
             'user_class',
             'password',
-            'username',
-            'marks'
+            'username'
         ]
         if not check_if_variables_are_set(request, required_data):
             return "Wrong data"
@@ -113,7 +112,7 @@ class Account:
         hash_object = hashlib.sha1(request.POST['password'].encode())
         new_user.password = hash_object.digest()
 
-        new_user.marks="$".join(['?']*number_of_problems)
+        new_user.marks = "$".join(['?']*number_of_problems)
         request.session['logged'] = True
         request.session['username'] = request.POST['username']
         request.session['password'] = request.POST['password']
@@ -131,7 +130,7 @@ class Account:
         """ This function is serving logging in. It returns state of this logging in."""
         # Check if is logged by session
         if request.session.get('logged') is not None:
-            return "Already logged"
+            Account.logout(request)
         # If not, check log data
 
         if request.method != "POST":
@@ -160,10 +159,13 @@ class Account:
     def is_logged(request):
         """ Returns true if user is logged, false if not"""
         if request.session.get('logged') is None:
+            Account.logout(request)
             return False
         if request.session.get('username') is None:
+            Account.logout(request)
             return False
         if request.session.get('password') is None:
+            Account.logout(request)
             return False
 
         querry = User.objects.filter(username=request.session.get('username'))
@@ -186,6 +188,7 @@ class Account:
 
     @staticmethod
     def update_context(request, context):
+        print(request.session['logged'])
         """ Updates the dictionary "context" by new data connected to accounts """
         if request.session.get('logged') is None:
             return context
@@ -197,6 +200,7 @@ class Account:
         querry = User.objects.filter(username=request.session.get('username'))
         password = hashlib.sha1(request.session.get('password').encode()).digest()
         if str(querry[0].password) != str(password):
+            Account.logout(request)
             return context
 
         context['username'] = querry[0].username
@@ -227,6 +231,7 @@ class Account:
             return "Wrong name"
         # We check if username is free
         try:
+            print("OK")
             user_to_change = User.objects.get(username=request.POST.get('username'))
             user_to_change.username = request.POST['username']
             user_to_change.email = request.POST['email']
@@ -242,7 +247,7 @@ class Account:
         return True
 
     @staticmethod
-    def try_change_password(request):
+    def try_change_password(request, user):
         """ Serves changing password"""
         if not Account.is_logged(request):
             return "User is not logged"
@@ -253,14 +258,17 @@ class Account:
         if request.POST.get('new_password') is None:
             return "Wrong data"
         if str(request.POST.get('old_password')) != str(request.session['password']):
-            return "Fatal error"
+            return "Old password wrong"
         # We check if username is free
         try:
-            user_to_change = User.objects.get(username=request.POST.get('username'))
+            user_to_change = User.objects.get(username=user)
             user_to_change.password = hashlib.sha1(request.POST['new_password'].encode()).digest()
-
             user_to_change.save()
+            request.session['username'] = user
+            request.session['password'] = request.POST['new_password']
+            request.session['logged'] = True
         except:
             return False
 
         return True
+

@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-<title>{{ contest_name }}</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" type="text/css" href="static/app/style.css">
-    <script src="static/app/clock.js"></script>
-    <script>
-        function remove(filename){
+{% extends "app/base_html.html" %}
+{% load static %}
+{% block head %}
+<script src="static/app/clock.js"></script>
+{% endblock %}
+{% block script_head %}
+function remove(filename){
           var xhttp = new XMLHttpRequest();
           xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -18,58 +14,10 @@
           xhttp.open("GET", "remove?file="+filename, true);
           xhttp.send();
         }
-    </script>
-</head>
-<body>
-
-<div class="header">
-
-    <div class="tit">
-        <h1>{{ contest_name }}</h1>
-        <p>{{ contest_description }}</p>
-    </div>
-    <div class="form_log">
-        {% if not logged %}
-        <form name="login" method="POST" class="form" action="login">
-            {% csrf_token %}
-            <br>
-            <label for=username"> Nazwa użytkownika: </label>
-            <input type="text" name="username">
-            <br>
-            <label for="password">Hasło:</label>
-            <input type="password" name="password">
-            <br>
-            <input type="submit" value="Zaloguj">
-
-        </form>
-        {% endif %}
-    </div>
-
-
-</div>
-
-
-<div class="topnav">
-  <a href="index">Aktualności</a>
-  <a href="rules">Zasady</a>
-    {% if admin %}
-        <a href="check_panel"> Ocenianie zadań</a>
-        <a href="ranks"> Rankingi </a>
-    {% endif %}
-    {% if not logged and open_enrollment %}
-        <a href="register"> Zapisz się</a>
-    {% elif logged %}
-        <a href="user"> Panel użytkownika</a>
-        <a href="user_settings"> Ustawienia konta</a>
-        <a href="logout"> Wyloguj</a>
-    {%endif%}
-
-</div>
-
-<div class="row">
-  <div class="column">
-      <center>
-    <h3>Zadania</h3>
+{% endblock %}
+{% block base_content %}
+<center>
+<h3>Zadania</h3>
       {% if contest_in_progress %}
       Do zakończenia konkursu pozostało:
       <br>
@@ -164,6 +112,14 @@
 
       {%endif%}
       </center>
+{% endblock %}
+{% block after_content %} {% endblock %}
+
+
+
+
+      <center>
+
   </div>
 </div>
 

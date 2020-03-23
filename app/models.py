@@ -27,3 +27,10 @@ class Settings(models.Model):
     mark_view = models.BooleanField(default=False)
     open_enrollment = models.BooleanField(default=False)
     marks_adnotation = models.CharField(max_length=300, default='')
+
+
+class News(models.Model):
+    news_title = models.CharField(max_length=100, default="")
+    news_date = models.DateTimeField()
+    news_shortcut = models.TextField()
+    news_full = models.TextField()

@@ -24,13 +24,35 @@ def set_context(request):
     today = timezone.now()
     output['contest_in_progress'] = False
     output['contest_finished'] = False
-    con_start=con_start.replace(tzinfo=None)
-    today=today.replace(tzinfo=None)
-    output['contest_start_date']=(con_start-datetime(1970,1,1,1)).total_seconds()*1000
-    output['contest_end_date']=(con_start+timedelta(minutes=duration)-datetime(1970, 1, 1)).total_seconds()*1000
+    con_start = con_start.replace(tzinfo=None)
+    today = today.replace(tzinfo=None)
+    output['contest_start_date'] = (con_start - datetime(1970, 1, 1, 1)).total_seconds() * 1000
+    output['contest_end_date'] = (con_start + timedelta(minutes=duration) - datetime(1970, 1, 1)).total_seconds() * 1000
     if con_start < today < con_start + timedelta(minutes=duration):
         output['contest_in_progress'] = True
     elif today > con_start + timedelta(minutes=duration):
         output['contest_finished'] = True
 
     return output
+
+
+def convert_data(data):
+    """Is converting data to nice string format"""
+    output = ''
+    output += str(data.day)
+    output += '.'
+    output += str(data.month)
+    output += '.'
+    output += str(data.year)
+    return output
+
+
+def add_news(title, content):
+    data = datetime.today()
+    print(data)
+    news = News()
+    news.news_date = data
+    news.news_title = title
+    news.news_shortcut = content
+    news.news_full = content
+    news.save()

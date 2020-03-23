@@ -19,5 +19,6 @@ urlpatterns = [
     path('solutions_check', views.solutions_check, name='solutions_check'),
     path('display_image_check', views.display_image_check, name='display_image_check'),
     path('ranks', views.ranks, name='ranks'),
+    path('news_add', views.news_add, name='news_add'),
     path('remove', views.remove, name='remove')
 ]

@@ -245,8 +245,8 @@ select{
 	border: none;
 	color: #fff;
 }
-.form2 input[type=submit]:hover, .form-style-1 input[type=button]:hover{
-	background: #4691A4;
+.form2 input[type=submit]:hover, .form2 input[type=button]:hover{
+	background: #4791B5;
 	box-shadow:none;
 	-moz-box-shadow:none;
 	-webkit-box-shadow:none;

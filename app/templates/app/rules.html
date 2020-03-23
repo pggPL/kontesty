@@ -1,71 +1,14 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-<title>{{ contest_name }}</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" type="text/css" href="static/app/style.css">
-
-</head>
-<body>
-
-<div class="header">
-
-    <div class="tit">
-        <h1>{{ contest_name }}</h1>
-        <p>{{ contest_description }}</p>
-    </div>
-    <div class="form_log">
-        {% if not logged %}
-        <form name="login" method="POST" class="form" action="login">
-            {% csrf_token %}
-            <br>
-            <label for=username"> Nazwa użytkownika: </label>
-            <input type="text" name="username">
-            <br>
-            <label for="password">Hasło:</label>
-            <input type="password" name="password">
-            <br>
-            <input type="submit" value="Zaloguj">
-
-        </form>
-        {% endif %}
-    </div>
-
-
-</div>
-
-
-<div class="topnav">
-  <a href="index">Aktualności</a>
-  <a href="rules">Zasady</a>
-    {% if admin %}
-        <a href="check_panel"> Ocenianie zadań</a>
-        <a href="ranks"> Rankingi </a>
-    {% endif %}
-    {% if not logged  and open_enrollment %}
-        <a href="register"> Zapisz się</a>
-    {% elif logged %}
-        <a href="user"> Panel użytkownika</a>
-        <a href="user_settings"> Ustawienia konta</a>
-        <a href="logout"> Wyloguj</a>
-    {%endif%}
-</div>
-
-<div class="row">
-  <div class="column">
-    <h2>Zasady</h2>
-      <ol>
+{% extends "app/base_html.html" %}
+{% load static %}
+{% block script_head %} {% endblock %}
+{% block base_content %}
+<h2>Zasady</h2>
+    <ol>
           {% for rule in rules%}
           <li>{{ rule }}</li>
           <br>
           {% endfor %}
       </ol>
       <br>
-
-  </div>
-</div>
-
-</body>
-</html>
+{% endblock %}
+{% block after_content %} {% endblock %}

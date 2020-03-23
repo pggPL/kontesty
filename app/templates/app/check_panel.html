@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-<title>{{ contest_name }}</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-   <link rel="stylesheet" type="text/css" href="static/app/style.css">
-
-<script>
-    var obj;
+{% extends "app/base_html.html" %}
+{% load static %}
+{% block script_head %}
+var obj;
     var current_i=-1;
     var current_j=0;
     var names = [{% for name in names %} '{{name}}', {% endfor %}];
@@ -109,62 +102,9 @@
           }
         }
     }
-
-
-</script>
-
-</head>
-<body onload="load()">
-
-<div class="header">
-
-    <div class="tit">
-        <h1>{{ contest_name }}</h1>
-        <p>{{ contest_description }}</p>
-    </div>
-    <div class="form_log">
-        {% if not logged %}
-        <form name="login" method="POST" class="form" action="login">
-            {% csrf_token %}
-            <br>
-            <label for=username"> Nazwa użytkownika: </label>
-            <input type="text" name="username">
-            <br>
-            <label for="password">Hasło:</label>
-            <input type="password" name="password">
-            <br>
-            <input type="submit" value="Zaloguj">
-            {% if wrong_password %}
-            <br><br>
-            <div style="color:red"> Złe hasło lub nazwa użytkownika! </div>
-            {% endif %}
-        </form>
-        {% endif %}
-    </div>
-
-
-</div>
-
-
-<div class="topnav">
-  <a href="index">Aktualności</a>
-  <a href="rules">Zasady</a>
-    {% if admin %}
-        <a href="check_panel"> Ocenianie zadań</a>
-        <a href="ranks"> Rankingi </a>
-    {% endif %}
-    {% if not logged and open_enrollment %}
-        <a href="register"> Zapisz się</a>
-    {% else %}
-        <a href="user"> Panel użytkownika</a>
-        <a href="user_settings"> Ustawienia konta</a>
-        <a href="logout"> Wyloguj</a>
-    {%endif%}
-</div>
-
-<div class="row">
-  <div class="column">
-        <br><br>
+{% endblock %}
+{% block base_content %}
+<br><br>
         <div id="table" style="width: 600px; float: left; margin: 0 60px 0 0">
 
         </div>
@@ -174,9 +114,8 @@
       <div id="solutions">
 
       </div>
-  </div>
-</div>
-
+{% endblock %}
+{% block after_content %}
 <div id="myModal" class="modal">
 
   <!-- Modal content -->
@@ -192,7 +131,6 @@
 
 <script>
     setInterval(refresh, 15000);
-
+    load();
 </script>
-</body>
-</html>
+{% endblock %}

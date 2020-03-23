@@ -10,6 +10,7 @@ import os
 
 def index(request):
     context = set_context(request)
+    context['posts'] = [(x.news_shortcut, x.news_title, convert_data(x.news_date)) for x in News.objects.order_by("-news_date").filter()]
     return render(request, "app/index.html", context)
 
 
@@ -48,7 +49,7 @@ def user_settings(request):
     context = set_context(request)
     if Account.try_change_data(request) is True:
         context['changed'] = True
-
+    context = set_context(request)
     return render(request, 'app/user_settings.html', context)
 
 
@@ -75,10 +76,14 @@ def logout(request):
 
 def change_password(request):
     context = set_context(request)
-    if Account.try_change_password(request) is True:
-        context['changed']=True
     if not context['logged']:
         redirect('index')
+    change_state = Account.try_change_password(request, context['username'])
+    if change_state is True:
+        context['changed'] = True
+    elif change_state == "Old password wrong":
+        context['old_password_wrong'] = True
+
     return render(request, 'app/change_password.html', context)
 
 
@@ -178,3 +183,16 @@ def ranks(request):
         return redirect('index')
     load_marks(context)
     return render(request, 'app/ranks.html', context)
+
+
+def news_add(request):
+    context = set_context(request)
+    if not context['admin']:
+        return redirect('index')
+    if request.method != "POST":
+        return render(request, 'app/news_add.html', context)
+    if request.POST.get("title") is None or request.POST.get("content") is None:
+        return render(request, 'app/news_add.html', context)
+    context['news_added'] = True
+    add_news(request.POST["title"], request.POST["content"])
+    return render(request, 'app/news_add.html', context)

@@ -1,0 +1,23 @@
+{% extends "app/base_html.html" %}
+{% load static %}
+{% block script_head %} {% endblock %}
+{% block base_content %}
+    {% if news_added %}
+        Dodano pomyślnie
+    {% else %}
+    <h2>Dodaj aktualność</h2>
+    <form method="post" class="form2">
+        {% csrf_token %}
+        <label>
+            Tytuł
+        </label>
+        <input type = "text" name = "title">
+        <label>Treść</label>
+        <textarea  name = "content">
+        </textarea>
+        <br><br>
+        <input type="button" value = "Opublikuj" onclick="submit()">
+    </form>
+    {% endif %}
+{% endblock %}
+{% block after_content %} {% endblock %}
